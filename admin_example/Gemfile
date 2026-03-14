@@ -44,6 +44,12 @@ group :development, :test do
   gem 'faker', '~> 3.4'
   gem 'pry-rails', '~> 0.3'
   gem 'debug', platforms: %i[ mri windows ]
+  # Ferramentas de Lint e Segurança
+  gem 'rubocop-rails', require: false
+  gem 'rubocop-rspec', require: false
+  gem 'rubocop-performance', require: false
+  gem 'brakeman', require: false
+  gem 'bundler-audit', require: false
 end
 
 group :development do
