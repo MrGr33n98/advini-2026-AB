@@ -1,7 +1,10 @@
 class Review < ApplicationRecord
-  self.implicit_order_column = "created_at"
-  belongs_to :product
   belongs_to :user
-  
-  validates :rating, presence: true, inclusion: { in: 1..5 }
+  belongs_to :product
+
+  # Status da Avaliação
+  enum status: { pending: 0, approved: 1, cancelled: 2, reported: 3 }
+
+  validates :rating, inclusion: { in: 1..5 }
+  validates :comment, presence: true
 end

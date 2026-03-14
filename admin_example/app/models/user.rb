@@ -1,9 +1,14 @@
 class User < ApplicationRecord
+  # Roles: Administrador, Advogado, Escritório, Fornecedor (Vendor), Equipe
+  enum role: { admin: 0, lawyer: 1, law_firm: 2, vendor: 3, company_member: 4 }
+  
+  has_many :reviews
+  has_many :claims
+  
+  validates :email, presence: true, uniqueness: true
+
   self.implicit_order_column = "created_at"
   
-  has_many :reviews, dependent: :destroy
-  
-  enum role: { lawyer: 0, vendor: 1, law_firm: 2 }
   enum verification_status: { pending: 0, verified: 1, rejected: 2 }
   
   def full_name

@@ -1,22 +1,34 @@
 ActiveAdmin.register Review do
-  menu priority: 5, label: "Avaliações"
-  
-  permit_params :product_id, :user_id, :title, :content, :rating, :ease_of_use_rating, 
-                :support_rating, :value_rating, :features_rating, :status
+  permit_params :status, :rating, :comment
+
+  # ⭐ Scopes de Moderação
+  scope :all, default: true
+  scope :pendentes, -> { where(status: :pending) }
+  scope :aprovadas, -> { where(status: :approved) }
+  scope :denunciadas, -> { where(status: :reported) }
 
   index do
     selectable_column
     id_column
     column :product
     column :user
-    column :rating
-    column :status
+    column :rating do |r|
+      "#{r.rating} ⭐"
+    end
+    column :status do |r|
+      status_tag r.status
+    end
     column :created_at
     actions
   end
 
-  filter :product
-  filter :user
-  filter :rating
-  filter :status
+  # Ações rápidas de moderação
+  member_action :approve, method: :put do
+    resource.approved!
+    redirect_to resource_path, notice: "Review aprovada com sucesso!"
+  end
+
+  action_item :approve, only: :show do
+    link_to "Aprovar Review", approve_admin_review_path(review), method: :put if review.pending?
+  end
 end
