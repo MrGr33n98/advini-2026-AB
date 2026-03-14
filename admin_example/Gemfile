@@ -1,0 +1,59 @@
+source 'https://rubygems.org'
+ruby '3.2.2'
+
+gem 'rails', '~> 7.1.3'
+gem 'pg', '~> 1.1'
+gem 'puma', '~> 6.4'
+gem 'redis', '>= 4.0.1'
+gem 'sidekiq', '~> 7.3'
+
+# ActiveAdmin Foundation
+gem 'activeadmin', '~> 3.2'
+gem 'inherited_resources', '~> 1.13'
+gem 'kaminari', '~> 1.2'
+gem 'ransack', '~> 4.0'
+gem 'sassc'
+
+# Authentication & Authorization
+gem 'devise', '~> 4.9'
+gem 'pundit', '~> 2.4'
+
+# API & Serialization
+gem 'jsonapi-serializer', '~> 2.2'
+gem 'rack-cors', '~> 2.0'
+gem 'blueprinter', '~> 1.1'
+
+# File Upload & Storage
+gem 'image_processing', '~> 1.13'
+gem 'aws-sdk-s3', '~> 1.168'
+gem 'carrierwave', '~> 3.0'
+gem 'mini_magick', '~> 4.12'
+
+# Search & Utilities
+gem 'pg_search', '~> 2.3'
+gem 'friendly_id', '~> 5.5'
+gem 'state_machines-activerecord', '~> 0.9'
+
+# Windows support
+gem 'tzinfo-data', platforms: %i[ windows jruby ]
+gem 'bootsnap', require: false
+
+group :development, :test do
+  gem 'rspec-rails', '~> 7.0'
+  gem 'factory_bot_rails', '~> 6.4'
+  gem 'faker', '~> 3.4'
+  gem 'pry-rails', '~> 0.3'
+  gem 'debug', platforms: %i[ mri windows ]
+end
+
+group :development do
+  gem 'web-console'
+  gem 'annotate', '~> 3.2'
+  gem 'letter_opener', '~> 1.9'
+end
+
+group :test do
+  gem 'capybara'
+  gem 'selenium-webdriver'
+  gem 'database_cleaner-active_record', '~> 2.1'
+end

@@ -1,0 +1,15 @@
+<li class="nav-item dropdown">
+  <li class="nav-item">
+    <%= link_to "Admin", admin_root_path, class: 'nav-link' %>
+  </li>
+  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    User Functionality
+  </a>
+  <ul class="dropdown-menu dropdown-menu-lg-end" aria-labelledby="navbarDropdown">
+    <li><%= link_to "New Post", new_post_path , class: "dropdown-item" %></li>
+    <li><a class="dropdown-item" href="#">Action</a></li>
+    <li><%= link_to "Edit Account", '#', class:"dropdown-item" %></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><%= link_to "Sign out", '#', method: :delete, class:"dropdown-item" %></li>
+  </ul>
+</li>
