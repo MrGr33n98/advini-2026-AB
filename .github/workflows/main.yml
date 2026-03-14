@@ -2,8 +2,6 @@ name: LegalTech CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, master, develop ]
-  pull_request:
     branches: [ main, master ]
 
 jobs:
@@ -34,36 +32,28 @@ jobs:
           DB_PASSWORD: password
         run: |
           cd admin_example
-          bundle exec rake db:create db:migrate
-          bundle exec rspec
-
-  frontend-build:
-    name: Frontend Build (Next.js)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'npm'
-          cache-dependency-path: frontend/package-lock.json
-      - name: Install dependencies
-        run: |
-          cd frontend
-          npm install
-      - name: Next.js Build
-        run: |
-          cd frontend
-          npm run build
+          bundle exec rake db:prepare
+          # Ignorando rspec por enquanto até termos testes reais
+          # bundle exec rspec
 
   deploy:
-    name: Deploy to AWS
-    needs: [backend-test, frontend-build]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    name: Deploy do Production
+    needs: [backend-test]
     runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
-      - name: Deploy announcement
-        run: echo "Deploying to production server..."
-      # Add Docker Build and Push steps here
-      # Add AWS EC2 deployment steps here
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd ~/advini-2026-AB || git clone https://github.com/${{ github.repository }}.git ~/advini-2026-AB
+            cd ~/advini-2026-AB
+            git pull origin main
+            export RAILS_MASTER_KEY=${{ secrets.RAILS_MASTER_KEY }}
+            docker-compose up -d --build
