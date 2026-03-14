@@ -4,6 +4,8 @@ class User < ApplicationRecord
   
   has_many :reviews
   has_many :claims
+  has_many :user_badges
+  has_many :badges, through: :user_badges
   
   validates :email, presence: true, uniqueness: true
 

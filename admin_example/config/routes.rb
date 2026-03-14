@@ -10,6 +10,7 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       get 'home', to: 'home#index'
+      resource :profile, only: [:show]
       resources :products, only: [:index, :show]
       resources :categories, only: [:index]
       resources :products, only: [:index, :show]
