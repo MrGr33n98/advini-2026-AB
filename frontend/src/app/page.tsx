@@ -1,10 +1,18 @@
 import Hero from "@/components/home/Hero";
+import BannerSlider from "@/components/shared/BannerSlider";
 import { ArrowRight, Box, Cpu, ShieldCheck, Zap } from "lucide-react";
 
 export default function Home() {
   return (
     <>
       <Hero />
+
+      {/* Intelligent Banner System */}
+      <section className="py-12 bg-white">
+        <div className="max-w-7xl mx-auto px-4">
+          <BannerSlider placement="home_top" />
+        </div>
+      </section>
       
       {/* Categories Grid */}
       <section className="py-24 bg-white">

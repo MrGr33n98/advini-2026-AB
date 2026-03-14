@@ -11,6 +11,7 @@ Rails.application.routes.draw do
     namespace :v1 do
       get 'home', to: 'home#index'
       resource :profile, only: [:show]
+      resources :banners, only: [:index]
       namespace :vendor do
         resource :dashboard, only: [:show]
       end
