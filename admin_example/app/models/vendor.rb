@@ -1,6 +1,6 @@
 class Vendor < ApplicationRecord
-  self.implicit_order_column = "created_at"
   has_many :products, dependent: :destroy
+  has_many :leads, dependent: :destroy
   
-  validates :name, presence: true
+  validates :name, presence: true, uniqueness: true
 end
