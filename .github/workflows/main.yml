@@ -7,14 +7,14 @@ on:
     branches: [ main, master ]
 
 jobs:
-  # 1. Análise Estática - Falha rápido se o código estiver "sujo"
-  lint:
-    name: Lint & Security (Static Analysis)
+  # 1. Análise Estática & Segurança
+  quality-gate:
+    name: Lint & Security Gates
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       
-      # Backend Analysis
+      # Setup Environments
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
@@ -22,15 +22,6 @@ jobs:
           bundler-cache: true
           working-directory: admin_example
       
-      - name: Run RuboCop
-        run: cd admin_example && bundle exec rubocop
-        continue-on-error: true # Vamos apenas avisar por enquanto, sem travar o deploy até limparmos tudo
-
-      - name: Run Brakeman (Security Scan)
-        run: cd admin_example && bundle exec brakeman --format sarif --output brakeman.sarif
-        continue-on-error: true
-
-      # Frontend Analysis
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
@@ -40,25 +31,33 @@ jobs:
       
       - name: Install Frontend Deps
         run: cd frontend && npm ci
-      
-      - name: Run ESLint
-        run: cd frontend && npm run lint
+
+      # Execute Scripts
+      - name: Run Backend Lint
+        run: bash scripts/backend-lint.sh
         continue-on-error: true
 
-  # 2. Testes Automatizados - Garante que a lógica está correta
+      - name: Run Security Scans
+        run: bash scripts/security-scan.sh
+        continue-on-error: true
+
+      - name: Run Frontend Checks
+        run: bash scripts/frontend-check.sh
+        continue-on-error: true
+
+  # 2. Testes Automatizados
   test:
-    name: Automated Tests (RSpec)
-    needs: [lint]
+    name: Automated Tests
+    needs: [quality-gate]
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:15
+        image: postgres:15-alpine
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: password
           POSTGRES_DB: avalia_juridico_test
-        ports:
-          - 5432:5432
+        ports: [5432:5432]
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -72,41 +71,18 @@ jobs:
           ruby-version: 3.2.2
           bundler-cache: true
           working-directory: admin_example
-      
-      - name: Database Setup
+          
+      - name: Run Backend Tests Script
         env:
           RAILS_ENV: test
           DB_HOST: localhost
           DB_PASSWORD: password
-        run: |
-          cd admin_example
-          bundle exec rake db:prepare
-      
-      - name: Run RSpec
-        env:
-          RAILS_ENV: test
-          DB_HOST: localhost
-          DB_PASSWORD: password
-        run: |
-          cd admin_example
-          # bundle exec rspec # Ativar quando houver specs reais
+        run: bash scripts/backend-test.sh
 
-  # 3. Build Verification - Garante que os Dockerfiles funcionam
-  build:
-    name: Build Verification (Docker)
-    needs: [test]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Verify Backend Build
-        run: docker build -t backend_test ./admin_example
-      - name: Verify Frontend Build
-        run: docker build -t frontend_test ./frontend
-
-  # 4. Scalable Deploy - Dispara o deploy no servidor
+  # 3. Build & Deploy
   deploy:
-    name: Production Deployment (CD)
-    needs: [build]
+    name: Production Deployment
+    needs: [test]
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
     steps:
@@ -124,10 +100,5 @@ jobs:
             cd ~/advini-2026-AB
             git pull origin main
             export RAILS_MASTER_KEY=${{ secrets.RAILS_MASTER_KEY }}
-            
-            # Práticas de Escalabilidade e DevOps ( Gage's Style )
-            docker-compose pull # Busca imagens se houver registro (opcional)
             docker-compose up -d --build --remove-orphans
-            
-            # Limpeza de recursos antigos para economizar disco (Scalability)
             docker image prune -f
