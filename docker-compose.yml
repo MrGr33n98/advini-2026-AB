@@ -1,35 +1,66 @@
 services:
   db:
-    image: postgres:15
+    image: postgres:15-alpine
+    restart: always
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
       POSTGRES_DB: avalia_juridico_production
-    ports:
-      - "5432:5432"
+    # 🔒 Segurança: Removido ports (disponível apenas internamente para o backend)
+    deploy:
+      resources:
+        limits:
+          memory: 256M # Reserva memória para o banco
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -u postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   backend:
     build: 
       context: ./admin_example
+    restart: always
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     environment:
       DATABASE_URL: postgresql://postgres:password@db:5432/avalia_juridico_production
       RAILS_ENV: production
       RAILS_MASTER_KEY: ${RAILS_MASTER_KEY}
       RAILS_SERVE_STATIC_FILES: "true"
+      RAILS_LOG_TO_STDOUT: "true"
     ports:
       - "3000:3000"
+    deploy:
+      resources:
+        limits:
+          memory: 512M # Limita o Rails para não derrubar o EC2
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m" # Evita que os logs encham o disco do Free Tier
+        max-file: "3"
 
   frontend:
     build:
       context: ./frontend
+    restart: always
     environment:
       NEXT_PUBLIC_API_URL: http://3.236.95.204:3000/api/v1
     ports:
       - "80:3000"
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
 volumes:
   postgres_data:
