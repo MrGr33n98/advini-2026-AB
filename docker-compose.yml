@@ -14,8 +14,8 @@ services:
         limits:
           memory: 256M # Reserva memória para o banco
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -u postgres"]
-      interval: 10s
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 5s
       timeout: 5s
       retries: 5
 
