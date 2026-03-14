@@ -12,6 +12,7 @@ gem 'activeadmin', '~> 3.2'
 gem 'inherited_resources', '~> 1.13'
 gem 'kaminari', '~> 1.2'
 gem 'ransack', '~> 4.0'
+gem 'sprockets-rails'
 gem 'sassc'
 
 # Authentication & Authorization
