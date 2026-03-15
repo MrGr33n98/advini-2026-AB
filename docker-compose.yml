@@ -29,7 +29,7 @@ services:
     environment:
       DATABASE_URL: postgresql://postgres:password@db:5432/avalia_juridico_production
       RAILS_ENV: production
-      SECRET_KEY_BASE: da4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d123456789abcdef123456789abcdef123456789abcdef123456789abcdef123456789abcdef123456789abcdef
+      SECRET_KEY_BASE: 88863f683da6f4df6d59453c1d68352654c6c1964f43f11d13f572f4e45e45a278d8c3f4e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1
       RAILS_SERVE_STATIC_FILES: "true"
       RAILS_LOG_TO_STDOUT: "true"
     ports:

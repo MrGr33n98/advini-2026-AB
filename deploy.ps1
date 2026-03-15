@@ -5,13 +5,17 @@ Write-Host "🚀 Iniciando deploy..." -ForegroundColor Green
 Write-Host "📦 Parando containers..." -ForegroundColor Yellow
 docker-compose down
 
+# Remove credenciais antigas se existirem
+Write-Host "🔧 Limpando credenciais..." -ForegroundColor Yellow
+docker-compose exec backend rm -f /app/config/credentials.yml.enc 2>$null
+
 # Rebuild e start
 Write-Host "🔨 Reconstruindo e iniciando..." -ForegroundColor Yellow  
 docker-compose up --build -d
 
 # Aguarda containers estarem prontos
 Write-Host "⏳ Aguardando containers..." -ForegroundColor Yellow
-Start-Sleep -Seconds 30
+Start-Sleep -Seconds 45
 
 # Executa migrations e seeds
 Write-Host "💾 Executando migrations e seeds..." -ForegroundColor Yellow
