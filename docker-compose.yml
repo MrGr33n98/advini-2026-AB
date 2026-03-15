@@ -22,7 +22,10 @@ services:
       db:
         condition: service_healthy
     environment:
-      DATABASE_URL: postgresql://postgres:password@db:5432/backend_production
+      DATABASE_HOST: db
+      DATABASE_USERNAME: postgres
+      DATABASE_PASSWORD: password
+      DATABASE_NAME: backend_production
       RAILS_ENV: production
       SECRET_KEY_BASE: da4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d123456789abcdef123456789abcdef123456789abcdef123456789abcdef
       RAILS_SERVE_STATIC_FILES: "true"
