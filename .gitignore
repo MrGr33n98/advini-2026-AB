@@ -1,37 +1,13 @@
-# Dependency directories
+.bundle
+log/*.log
+tmp/
+db/*.sqlite3
+db/*.sqlite3-journal
+public/assets
+.env*
 node_modules/
 .next/
-out/
-build/
 dist/
-
-# Logs and databases
-*.log
-*.sqlite
-admin_example/log/*.log
-admin_example/tmp/
-admin_example/db/*.sqlite3
-admin_example/db/*.sqlite3-journal
-admin_example/public/assets/
-
-# Environment variables
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-admin_example/config/master.key
-admin_example/config/credentials/*.key
-
-# IDEs
-.vscode/
-.idea/
-
-# OS files
+build/
 .DS_Store
-Thumbs.db
-
-# Documentation and keys
-docs/
 *.pem
-

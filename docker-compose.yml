@@ -7,12 +7,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: avalia_juridico_production
-    # 🔒 Segurança: Removido ports (disponível apenas internamente para o backend)
-    deploy:
-      resources:
-        limits:
-          memory: 256M # Reserva memória para o banco
+      POSTGRES_DB: backend_production
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "postgres"]
       interval: 5s
@@ -21,41 +16,19 @@ services:
 
   backend:
     build: 
-      context: ./admin_example
+      context: ./backend
     restart: always
     depends_on:
       db:
         condition: service_healthy
     environment:
-      DATABASE_URL: postgresql://postgres:password@db:5432/avalia_juridico_production
+      DATABASE_URL: postgresql://postgres:password@db:5432/backend_production
       RAILS_ENV: production
-      SECRET_KEY_BASE: 88863f683da6f4df6d59453c1d68352654c6c1964f43f11d13f572f4e45e45a278d8c3f4e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1
+      SECRET_KEY_BASE: da4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d123456789abcdef123456789abcdef123456789abcdef123456789abcdef
       RAILS_SERVE_STATIC_FILES: "true"
       RAILS_LOG_TO_STDOUT: "true"
     ports:
       - "3000:3000"
-    deploy:
-      resources:
-        limits:
-          memory: 512M # Limita o Rails para não derrubar o EC2
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m" # Evita que os logs encham o disco do Free Tier
-        max-file: "3"
-
-  frontend:
-    build:
-      context: ./frontend
-    restart: always
-    environment:
-      NEXT_PUBLIC_API_URL: http://3.236.95.204:3000/api/v1
-    ports:
-      - "80:3000"
-    deploy:
-      resources:
-        limits:
-          memory: 512M
     logging:
       driver: "json-file"
       options:
